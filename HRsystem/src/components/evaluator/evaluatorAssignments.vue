@@ -1,5 +1,5 @@
 <template>
-  <div class="h-dvh w-screen bg-gray-100 flex flex-col" style="font-family: 'Prompt', sans-serif;">
+  <div class="h-dvh w-full  flex flex-col mt-15" style="font-family: 'Prompt', sans-serif;">
     <main class="flex-1 p-8">
       <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">
         รายการครูผู้สอนในแต่ละภาคเรียน

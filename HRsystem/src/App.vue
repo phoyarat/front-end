@@ -1,23 +1,13 @@
 <script setup>
-import mybar from "./view/mybar.vue"
-import MainContent from "./view/main.vue"
-import evaluationform from "./view/evaluationform.vue";
-
-// import signup from "./pages/signup.vue"
+import MyBar from './view/mybar.vue'
 </script>
+
 <template>
-  <mybar />
-  <router-view />
+  <MyBar />
+  <div class="pt-24">
+    <router-view />
+  </div>
   <footer></footer>
 </template>
 
-<script>
-export default {
-  name: 'App',
-  components: {
-    mybar
-  },
-};
-</script>
-|
 <style scoped></style>
