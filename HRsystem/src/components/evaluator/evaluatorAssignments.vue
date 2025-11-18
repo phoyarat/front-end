@@ -1,73 +1,80 @@
 <template>
-  <div class="h-dvh w-full  flex flex-col mt-15" style="font-family: 'Prompt', sans-serif;">
-    <main class="flex-1 p-8">
-      <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">
-        รายการครูผู้สอนในแต่ละภาคเรียน
-      </h2>
-      <div class="flex flex-wrap gap-4 mb-8 justify-center">
-        <select v-model="selectedPeriod" class="border rounded-lg px-4 py-2 shadow-sm">
-          <option value="">รวมทุกภาคเรียน</option>
-          <option v-for="p in periods" :key="p">{{ p }}</option>
-        </select>
+  <div class="flex flex-col " style="font-family: 'Prompt', sans-serif; margin-top: 75px;">
+   <main class="flex-1 p-6 overflow-auto bg-blue-50">
+  <h2 class="text-3xl font-bold mb-6 text-center text-blue-900">
+    รายการครูผู้สอนในแต่ละภาคเรียน
+  </h2>
 
-        <select v-model="selectedDept" class="border rounded-lg px-4 py-2 shadow-sm">
-          <option value="">ทุกภาควิชา</option>
-          <option v-for="d in departments" :key="d">{{ d }}</option>
-        </select>
+  <div class="flex flex-wrap gap-4 mb-8 justify-center">
+    <select v-model="selectedPeriod"
+            class="border border-blue-300 rounded-lg px-4 py-2 shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
+      <option value="">รวมทุกภาคเรียน</option>
+      <option v-for="p in periods" :key="p">{{ p }}</option>
+    </select>
 
-        <input
-          v-model="search"
-          type="text"
-          placeholder="🔍 ค้นหาครูผู้สอน..."
-          class="border rounded-lg px-4 py-2 w-64 shadow-sm"
-        />
+    <select v-model="selectedDept"
+            class="border border-blue-300 rounded-lg px-4 py-2 shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
+      <option value="">ทุกภาควิชา</option>
+      <option v-for="d in departments" :key="d">{{ d }}</option>
+    </select>
+
+    <input v-model="search"
+           type="text"
+           placeholder="🔍 ค้นหาครูผู้สอน..."
+           class="border border-blue-300 rounded-lg px-4 py-2 w-64 shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none" />
+  </div>
+
+ 
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 " style="padding: 0px 50px 30px 50px;">
+    <div v-for="a in filteredAssignments" :key="a.id"
+         class="bg-white rounded-2xl p-6 shadow-md hover:shadow-xl transition flex flex-col justify-between h-full w-full border-t-4 border-blue-400">
+      
+      <div>
+        <h3 class="text-lg font-semibold text-blue-900 mb-1">{{ a.teacher }}</h3>
+        <p class="text-blue-700 text-sm mb-2">{{ a.department }}</p>
+        <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-md">{{ a.period }}</span>
       </div>
-      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div v-for="a in filteredAssignments" :key="a.id"
-          class="bg-blue-100 rounded-2xl p-6 shadow hover:shadow-lg transition">
-          <h3 class="text-lg font-semibold text-gray-800 mb-1">{{ a.teacher }}</h3>
-          <p class="text-gray-500 text-sm mb-2">{{ a.department }}</p>
-          <span class="text-xs bg-blue-200 text-blue-700 px-2 py-1 rounded-md">
-            {{ a.period }}
-          </span>
 
-          <div class="mt-4 flex justify-end">
-            <button
-              class="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-2 rounded-lg transition">
-              จัดการข้อมูล
-            </button>
-          </div>
-        </div>
+      <div class="mt-4 flex justify-end">
+        <button class="text-white text-sm px-4 py-2 rounded-lg transition transform hover:scale-105 shadow-md"
+                style="background-color: #3b82f6;">
+          จัดการข้อมูล
+        </button>
       </div>
-    </main>
 
-    <footer class="bg-white text-center py-4 text-gray-500 text-sm mt-8">
+    </div>
+  </div>
+</main>
+
+
+    <footer class=" text-center py-4 text-sm ">
       © 2025 วิทยาลัยเทคโนโลยีลพบุรี - ระบบบริหารบุคลากร
     </footer>
   </div>
 </template>
 
 <script>
-import data from '../../resource/assignments.json';
+import data from "../../resource/assignments.json";
 
 export default {
   data() {
     return {
       assignments: data,
-      selectedPeriod: '',
-      selectedDept: '',
-      search: '',
-      periods: ['ภาคเรียนที่ 1/2568', 'ภาคเรียนที่ 2/2568'],
-      departments: ['แผนกคอมพิวเตอร์', 'แผนกไฟฟ้า', 'แผนกอิเล็กทรอนิกส์'],
+      selectedPeriod: "",
+      selectedDept: "",
+      search: "",
+      periods: ["ภาคเรียนที่ 1/2568", "ภาคเรียนที่ 2/2568"],
+      departments: ["แผนกคอมพิวเตอร์", "แผนกไฟฟ้า", "แผนกอิเล็กทรอนิกส์"],
     };
   },
   computed: {
     filteredAssignments() {
-      return this.assignments.filter(a => {
+      return this.assignments.filter((a) => {
         return (
           (!this.selectedPeriod || a.period === this.selectedPeriod) &&
           (!this.selectedDept || a.department === this.selectedDept) &&
-          (!this.search || a.teacher.toLowerCase().includes(this.search.toLowerCase()))
+          (!this.search ||
+            a.teacher.toLowerCase().includes(this.search.toLowerCase()))
         );
       });
     },
@@ -76,5 +83,5 @@ export default {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap");
 </style>

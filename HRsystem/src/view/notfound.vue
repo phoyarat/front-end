@@ -5,11 +5,13 @@
       The page you're looking for doesn't exist.
     </p>
     <button
-      @click="goHome"
-      class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-    >
-      Go to Home
-    </button>
+  @click="goHome"
+  style="padding: 0.5rem 1.5rem; background-color: #2563eb; color: white; border-radius: 0.5rem; transition: background-color 0.3s;"
+  @mouseover="hover = true"
+  @mouseleave="hover = false"
+>
+  Go to Home
+</button>
   </div>
 </template>
 

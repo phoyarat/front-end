@@ -60,11 +60,14 @@ button:focus-visible {
 }
 
 #app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  width: 100%;        /* ให้เต็มความกว้างหน้าจอ */
+  max-width: 100%;    /* ไม่เกินหน้าจอ */
+  margin: 0;          /* ไม่มี margin ซ้าย-ขวา */
+  padding: 0rem;      /* เว้นขอบรอบ ๆ */
+  box-sizing: border-box; /* รวม padding เข้า width */
   text-align: center;
 }
+
 
 @media (prefers-color-scheme: light) {
   :root {
