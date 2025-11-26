@@ -1,13 +1,14 @@
 <script setup>
 import MyBar from './view/mybar.vue'
+import Backend from './view/signup.vue'
+import profilepage from './pages/profilepage.vue'
 </script>
 
 <template>
   <MyBar />
-  <div class="pt-24">
     <router-view />
-  </div>
-  <footer></footer>
+    <Backend />
+    <!-- <profilepage /> -->
 </template>
 
 <style scoped></style>
