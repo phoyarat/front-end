@@ -7,8 +7,10 @@ import TeachersAssignments from '../components/teacher/TeachersAssignments.vue'
 import profilepage from '../pages/profilepage.vue'
 
 const routes = [
+  
   { path: '/', component: Main },
   { path: '/evaluator', component: EvaluatorAssignments },
+  { path: '/evaluator/assignments/:id', name: 'EvalutionForm', component: () => import('../view/teacherForm.vue') ,props: true},
   { path: '/teachers', component: Teachers },
   { path: '/form', component: TeachersAssignments },
   { path: '/profilepage', component: profilepage },

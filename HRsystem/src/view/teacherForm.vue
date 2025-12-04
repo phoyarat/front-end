@@ -1,109 +1,117 @@
 <template>
-    <div class="bg-white px-11 rounded-xl shadow-xl shadow py-5 ">
-        <h1 class="font-bold text-gray-700 mb-2 text-left">
-            แบบประเมินผลบุคลากร
-        </h1>
-        <p class="text-gray-800 text-left my-5">
-            ครูผู้สอน: {{ teacher?.name }} * ภาควิชา : {{ teacher.department }} 
-        </p>
-        <hr class="text-gray-800">
+  <div class="min-h-screen my-8 bg-gray-100" >
+ <h1 class="text-2xl font-bold text-center pt-15  mt-5">
+       แบบฟอร์มประเมิน
+    </h1>
 
-       <table class="w-full border-collapse">
-      <thead>
-        <tr class="bg-gray-200 ">
-          <th class="py-3 text-left">ตัวชี้วัด/เกณฑ์</th>
-          <th class="p-3 text-center w-32 ">คะแนน/เต็ม</th>
-          <th class="p-3 text-center w-24">ผ่าน/ไม่ผ่าน</th>
-          <th class="p-3">หมายเหตุ</th>
-        </tr>
-      </thead>
-      
-      <tbody>
-        <tr 
-          v-for="item in criteria"
-          :key="item.id"
-          class="border-b hover:bg-gray-50"
+    <div
+      v-if="assignment"
+      class="bg-white  rounded-xl shadow max-w-xl mx-auto "
+      style="margin-top: 2rem; padding: 30px;"
+    >
+      <p class=" text-gray-600 text-xl font-semibold"  >
+        {{ assignment.teacher }}
+      </p>
+
+      <p class=" text-sm text-gray-600" >ภาควิชา: {{ assignment.department }}</p>
+
+      <p
+        class="text-blue-600 bg-blue-200 text-blue-900 text-xl rounded-md inline-block mt-1 px-2 py-1 mb-4"
+      >
+        {{ assignment.period }}
+      </p>
+
+      <hr class="my-4" />
+
+      <form @submit.prevent="submitForm">
+        <label class="block font-medium mt-4 text-left">1. ความรับผิดชอบ</label>
+        <select
+          v-model="form.responsibility"
+          class="border w-full p-2 rounded-lg "
+          required
         >
-          <td class="py-3 text-left">{{ item.title }}</td>
+          <option value="">เลือกคะแนน</option>
+          <option v-for="n in 5" :key="n">{{ n }}</option>
+        </select>
 
-          <td class="p-3 text-center">
-            <input
-              v-model.number="item.score"
-              type="number"
-              min="0"
-              max="5"
-              class="w-20 border rounded-lg p-1 text-center"
-            />
-          </td>
+        <label class="block font-medium mt-4 text-left">2. การสอน</label>
+        <select
+          v-model="form.teaching"
+          class="border w-full p-2 rounded-lg"
+          required
+        >
+          <option value="">เลือกคะแนน</option>
+          <option v-for="n in 5" :key="n">{{ n }}</option>
+        </select>
 
-          <td class="p-3 text-center">
-            <select v-model="item.pass" class="border rounded-lg p-1 px-2">
-              <option :value="true">✓ ผ่าน</option>
-              <option :value="false">✗ ไม่ผ่าน</option>
-            </select>
-          </td>
+        <label class="block font-medium mt-4 text-left">3. เพิ่มเติม/หมายเหตุ</label>
+        <textarea
+          v-model="form.comment"
+          class="border w-full p-2 rounded-lg"
+          rows="3"
+        ></textarea>
 
-          <td class="p-3">
-            <input
-              v-model="item.note"
-              type="text"
-              class="w-full border rounded-lg p-1 "
-              placeholder="เพิ่มหมายเหตุ..."
-            />
-          </td>
-        </tr>
-      </tbody>
-    </table>
+        <button
+          class="mt-6 w-full bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white py-2.5 rounded-xl shadow-md transition-all duration-200 hover:shadow-lg hover:scale-[1.02] active:scale-95"
+        >
+          ส่งแบบประเมิน
+        </button>
+      </form>
+    </div>
 
-    <div class="flex justify-end gap-4 mt-8">
-      <button
-        @click="emitSave"
-        class="px-6 py-3 bg-secondary rounded-xl hover:bg-secondary"
-      >
-        บันทึกชั่วคราว
-      </button>
-      
-      <button
-        @click="emitSubmit"
-        class="px-6 py-3 bg-primary text-white rounded-xl hover:bg-primary"
-      >
-        ยืนยันผลประเมิน
-      </button>
+    <div v-else class="text-center text-red-500 mt-10">
+      ไม่พบข้อมูลการมอบหมาย
     </div>
   </div>
 </template>
 
 <script>
+import assignments from "../resource/assignments.json";
 
 export default {
-  name: "TeacherForm",
+  props: ["id"],
 
-  props: {
-    teacher: {
-      type: Object,
-      required: true,
-      default: () => ({ id: null, name: 'Unknown' })
-    },
+  data() {
+    return {
+      assignment: null,
+      form: {
+        responsibility: null,
+        teaching: null,
+        comment: "",
+      },
+    };
+  },
 
-    criteria: {
-      type: Array,
-      required: true,
-      default: () => []
-    },
+  created() {
+    this.assignment = assignments.find((a) => a.id === Number(this.id));
   },
 
   methods: {
-    emitSave() {
-      this.$emit("save-draft", this.criteria); 
-      console.log("Saving Draft:", this.criteria);
-    },
-    emitSubmit() {
-      this.$emit("submit", this.criteria);
-      console.log("Submitting:", this.criteria);
+    submitForm() {
+      const evaluation = {
+        id: Date.now(), // ไอดีความเห็น
+        assignmentId: this.assignment.id,
+        teacher: this.assignment.teacher,
+        department: this.assignment.department,
+        period: this.assignment.period,
+        responsibility: Number(this.form.responsibility),
+        teaching: Number(this.form.teaching),
+        comment: this.form.comment,
+        totalScore:
+          Number(this.form.responsibility) + Number(this.form.teaching),
+        date: new Date().toLocaleDateString("th-TH"),
+      };
+
+      // บันทึกผลลง localStorage
+      let list = JSON.parse(localStorage.getItem("evaluations")) || [];
+      list.push(evaluation);
+      localStorage.setItem("evaluations", JSON.stringify(list));
+
+      alert("ส่งแบบประเมินเรียบร้อย!");
+      this.$router.push("/teachers");
     },
   },
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

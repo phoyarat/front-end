@@ -1,15 +1,38 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
+import express from 'express';
+import bodyParser from 'body-parser';
+import cors from 'cors';
+import mysql from 'mysql2';
+import multer from 'multer';
+import path from 'path';
+import bcrypt from 'bcrypt';
+import { fileURLToPath } from 'url';
 
+// -------------------------------------------
+// Setup
+// -------------------------------------------
 const app = express();
 const port = 3000;
 
-// ใช้เป็นฐานข้อมูลชั่วคราว
-let users = [];
-let nextId = 1;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-// อนุญาตให้ Vue (5173) Fetch มาได้
+// -------------------------------------------
+// Multer Upload
+// -------------------------------------------
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, 'uploads'));
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + '-' + file.originalname);
+  }
+});
+const upload = multer({ storage });
+
+// Static folder
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Middleware
 app.use(cors({
   origin: 'http://localhost:5173',
   credentials: true,
@@ -18,100 +41,79 @@ app.use(cors({
 
 app.use(bodyParser.json());
 
-// -------------------------------------------------------
-// 1) GET users ทั้งหมด
-// -------------------------------------------------------
+// -------------------------------------------
+// Connect MySQL Database
+// -------------------------------------------
+const db = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: '',
+  database: 'database'
+});
+
+db.connect(err => {
+  if (err) {
+    console.error('DB connect error:', err);
+    return;
+  }
+  console.log('MySQL Connected successfully');
+});
+
+// -------------------------------------------
+// API Routes
+// -------------------------------------------
+
+// Get all users
 app.get('/users', (req, res) => {
-  res.json(users);
+  db.query("SELECT * FROM users", (err, results) => {
+    if (err) return res.status(500).json({ error: err });
+    res.json(results);
+  });
 });
 
-// -------------------------------------------------------
-// 2) GET user ตาม id
-// -------------------------------------------------------
+// Get user by id
 app.get('/users/:id', (req, res) => {
-  const userId = parseInt(req.params.id);
-  const user = users.find(u => u.id === userId);
+  db.query("SELECT * FROM users WHERE id = ?", [req.params.id], (err, results) => {
+    if (err) return res.status(500).json({ error: err });
 
-  if (!user) {
-    return res.status(404).json({ message: 'User not found' });
-  }
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
 
-  res.json(user);
+    res.json(results[0]);
+  });
 });
 
-// -------------------------------------------------------
-// 3) สมัครสมาชิก
-// -------------------------------------------------------
-app.post('/signup', (req, res) => {
-  const { username, password, email } = req.body;
+// Signup user
+app.post('/signup', upload.single('avatar'), async (req, res) => {
+  const { fname, lname, username, password, role } = req.body;
+  const avatar = req.file?.filename || null;
 
-  if (!username || !password || !email) {
-    return res.status(400).json({ message: 'กรุณากรอกข้อมูลให้ครบทุกช่อง' });
+  if (!fname || !lname || !username || !password || !role) {
+    return res.status(400).json({ message: 'All fields are required' });
   }
 
-  const newUser = { id: nextId++, username, password, email };
-  users.push(newUser);
+  const hashedPassword = await bcrypt.hash(password, 10);
 
-  console.log('Users:', users);
-  res.status(200).json({ message: 'สมัครสมาชิกสำเร็จ!' });
+  const sql = `
+    INSERT INTO users (fname, lname, username, password, avatar, role)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `;
+
+  db.query(sql, [fname, lname, username, hashedPassword, avatar, role], err => {
+    if (err) {
+      if (err.code === 'ER_DUP_ENTRY') {
+        return res.status(409).json({ message: 'Username already exists' });
+      }
+      return res.status(500).json({ message: 'Database error', error: err });
+    }
+    res.status(201).json({ message: 'Signup successful' });
+  });
 });
 
-// -------------------------------------------------------
-// 4) อัปเดตข้อมูลทั้งหมด ด้วย PUT
-// -------------------------------------------------------
-app.put('/users/:id', (req, res) => {
-  const userId = parseInt(req.params.id);
-  const userIndex = users.findIndex(u => u.id === userId);
-
-  if (userIndex === -1) {
-    return res.status(404).json({ message: 'User not found' });
-  }
-
-  users[userIndex] = {
-    ...users[userIndex],
-    ...req.body
-  };
-
-  res.json({ message: 'User updated successfully', user: users[userIndex] });
-});
-
-// -------------------------------------------------------
-// 5) อัปเดตบางส่วนด้วย PATCH
-// -------------------------------------------------------
-app.patch('/users/:id', (req, res) => {
-  const userId = parseInt(req.params.id);
-  const userIndex = users.findIndex(u => u.id === userId);
-
-  if (userIndex === -1) {
-    return res.status(404).json({ message: 'User not found' });
-  }
-
-  const data = req.body;
-
-  if (data.username !== undefined) users[userIndex].username = data.username;
-  if (data.password !== undefined) users[userIndex].password = data.password;
-  if (data.email !== undefined) users[userIndex].email = data.email;
-
-  res.json({ message: 'User updated successfully', user: users[userIndex] });
-});
-
-// -------------------------------------------------------
-// 6) DELETE ลบ user
-// -------------------------------------------------------
-app.delete('/users/:id', (req, res) => {
-  const userId = parseInt(req.params.id);
-  const userIndex = users.findIndex(u => u.id === userId);
-
-  if (userIndex === -1) {
-    return res.status(404).json({ message: 'User not found' });
-  }
-
-  const deletedUser = users.splice(userIndex, 1)[0];
-
-  res.json({ message: 'User deleted successfully', user: deletedUser });
-});
-
-// -------------------------------------------------------
+// -------------------------------------------
+// Start Server
+// -------------------------------------------
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
