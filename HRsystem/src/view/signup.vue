@@ -1,15 +1,14 @@
 <template>
-  <div class="min-h-full flex items-center justify-center bg-blue-100 py-25 pb-8" style="font-family: 'Prompt', sans-serif;">
-    <div class="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg">
-      <div class="text-center mb-6">
+  <div class="min-h-full flex items-center justify-center bg-blue-100 py-16 pb-8" style="font-family: 'Prompt', sans-serif;">
+    <div class="w-full max-w-md bg-white px-10 mt-10 py-2 rounded-2xl shadow-lg">
+      <div class="text-center mb-2">
         <h1 class="text-2xl font-bold text-gray-800">Sign Up</h1>
-        <p class="text-blue-500 text-sm">Please fill in the form below to create an account.</p>
+        <p class="text-blue-500 py-1 text-sm">Please fill in the form below to create an account.</p>
       </div>
-
       <form @submit.prevent="signup" class="space-y-4">
         
         <div>
-          <label class="text-gray-700 font-medium">First Name</label>
+          <label class="text-gray-700 font-medium ">First Name</label>
           <input v-model="form.fname" type="text"
             class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
             placeholder="First Name" required />
@@ -39,23 +38,25 @@
         <div>
           <label class="text-gray-700 font-medium">Role</label>
           <select v-model="form.role"
-            class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
+            class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg 
+         focus:ring-2 focus:ring-blue-400 focus:outline-none text-gray-500">
             <option value="user">User</option>
             <option value="admin">Admin</option>
           </select>
         </div>
 
         <div>
-          <label class="text-gray-700 font-medium">Avatar</label>
-          <input type="file" @change="handleFile" class="w-full mt-1 text-gray-600" />
-        </div>
+          <label class="text-gray-700 font-medium ">Avatar</label>
+          <input type="file" @change="handleFile" class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg 
+         focus:ring-2 focus:ring-blue-400 focus:outline-none text-gray-500" />
+        </div><br>
 
         <button type="submit"
-          class="w-full py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg transition">
+          class="w-full py-2 !bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg transition">
           Sign Up
         </button>
 
-        <p class="text-sm text-gray-600 text-center">
+        <p class="text-sm text-gray-600 text-center mt-2">
           ถ้าคุณมีบัญชีอยู่แล้ว?
           <router-link to="/login" class="text-blue-600 hover:underline">เข้าสู่ระบบ</router-link>
         </p>
