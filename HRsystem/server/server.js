@@ -84,7 +84,7 @@ app.get('/users/:id', (req, res) => {
   });
 });
 
-// Signup user
+// SIGNUP user
 app.post('/signup', upload.single('avatar'), async (req, res) => {
   const { fname, lname, username, password, role } = req.body;
   const avatar = req.file?.filename || null;
@@ -109,7 +109,30 @@ app.post('/signup', upload.single('avatar'), async (req, res) => {
     }
     res.status(201).json({ message: 'Signup successful' });
   });
+});   
+app.put('/users/:id', (req, res) => {
+  const { fname, lname, username } = req.body;
+  const { id } = req.params;
+
+  db.query(
+    'UPDATE users SET fname = ?, lname = ?, username = ? WHERE id = ?',
+    [fname, lname, username, id],
+    (err) => {
+      if (err) return res.status(500).json({ error: err });
+      res.json({ message: 'User updated successfully' });
+    }
+  );
 });
+
+app.delete('/users/:id', (req, res) => {
+  const { id } = req.params;
+
+  db.query('DELETE FROM users WHERE id = ?', [id], (err) => {
+    if (err) return res.status(500).json({ error: err });
+    res.json({ message: 'User deleted successfully' });
+  });
+});
+
 
 // -------------------------------------------
 // Start Server
