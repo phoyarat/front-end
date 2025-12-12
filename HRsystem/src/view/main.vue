@@ -1,5 +1,5 @@
 <template>
-  <!-- <div class="" style="font-family: 'Prompt', sans-serif">
+  <div class="" style="font-family: 'Prompt', sans-serif">
   <main class=" w-fit ma-auto px-5  py-10 bg-white rounded-xl ">
       <h2 class="text-xl font-semibold mb-4 text-gray-800">
         ยินดีต้อนรับเข้าสู่ระบบประเมินบุคลากร
@@ -19,7 +19,7 @@
             ไปหน้า Profliepage
           </a>
     </main>
-  </div> -->
+  </div>
 </template>
 <script>
 import logo from "../assets/icon.jpg";

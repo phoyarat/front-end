@@ -6,7 +6,7 @@ import Backend from './view/signup.vue'
 <template>
   <MyBar />
     <router-view />
-    <Backend />
+    <!-- <Backend /> -->
  
 </template>
 

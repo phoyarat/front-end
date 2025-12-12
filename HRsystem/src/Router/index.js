@@ -4,7 +4,7 @@ import EvaluatorAssignments from '../components/evaluator/evaluatorAssignments.v
 import NotFound from '../view/notfound.vue'
 import Teachers from '../view/teachers.vue'
 import TeachersAssignments from '../components/teacher/TeachersAssignments.vue'
-import profilepage from '../pages/profilepage.vue'
+import profilepage from '../view/profilepage.vue'
 
 const routes = [
   
