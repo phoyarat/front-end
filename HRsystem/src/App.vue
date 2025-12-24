@@ -6,8 +6,8 @@ import dashboard from './pages/dashboard.vue';
 
 <template>
   <MyBar />
-  <!-- <router-view /> -->
-  <dashboard />
+  <router-view />
+  <!-- <dashboard /> -->
     <!-- <Backend /> -->
  
 </template>

@@ -35,10 +35,10 @@
           </li>
           <li>
             <router-link
-              to="/evaluator"
+              to="/dashboard"
               class="px-4 py-2 rounded-xl font-semibold hover:bg-blue-100 hover:text-blue-700 transition-all duration-200"
             >
-              กรรมการ
+              Dashboard
             </router-link>
           </li>
           <li class="group relative">

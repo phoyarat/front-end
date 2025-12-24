@@ -5,7 +5,7 @@ import NotFound from '../view/notfound.vue'
 import Teachers from '../view/teachers.vue'
 import TeachersAssignments from '../components/teacher/TeachersAssignments.vue'
 import profilepage from '../view/profilepage.vue'
-
+import dashboard from '../view/dashboard.vue'
 const routes = [
   
   { path: '/', component: Main },
@@ -14,6 +14,7 @@ const routes = [
   { path: '/teachers', component: Teachers },
   { path: '/form', component: TeachersAssignments },
   { path: '/profilepage', component: profilepage },
+  { path: '/dashboard', component: dashboard },
   { path: '/:catchAll(.*)', name: 'NotFound', component: NotFound },
   
 ]

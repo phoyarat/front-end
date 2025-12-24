@@ -66,16 +66,14 @@ export default {
   },
 
   mounted() {
-    // โหลดข้อมูลจาก localStorage (หรือ fetch API backend)
-    const saved = localStorage.getItem("evaluations");
+    const saved = localStorage.getItem("teacherForm");
     this.evaluations = saved ? JSON.parse(saved) : [];
   },
 
   methods: {
     clearEvaluations() {
-      localStorage.removeItem("evaluations");
+      localStorage.removeItem("teacherForm");
       this.evaluations = [];
-
       alert("ลบข้อมูลทั้งหมดเรียบร้อย!");
     }
   }

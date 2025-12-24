@@ -17,6 +17,7 @@
         placeholder="Add new task"
         class="flex-1 border rounded px-2"
       />
+      <!-- สีปุ่ม ฟ้า -->
       <button
         @click="addTask"
         class="px-6 py-2 rounded- font-medium text-white bg-gradient-to-r from-blue-500 to-blue-700 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 active:scale-95"
@@ -45,6 +46,7 @@
           >
             {{ task.title }}
           </span>
+          <!-- สีปุ่ม แดง -->
         </div>
         <button
           @click="deleteTask(task.id)"

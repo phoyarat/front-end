@@ -71,35 +71,44 @@
   </div>
 </template>
 
-<script>
-import data from "../../resource/assignments.json";
+<script setup>
+import { ref, computed, onMounted } from "vue"
 
-export default {
-  data() {
-    return {
-      assignments: data,
-      selectedPeriod: "",
-      selectedDept: "",
-      search: "",
-      periods: ["ภาคเรียนที่ 1/2568", "ภาคเรียนที่ 2/2568"],
-      departments: ["แผนกคอมพิวเตอร์", "แผนกไฟฟ้า", "แผนกอิเล็กทรอนิกส์"],
-    };
-  },
-  computed: {
-    filteredAssignments() {
-      return this.assignments.filter((a) => {
-        return (
-          (!this.selectedPeriod || a.period === this.selectedPeriod) &&
-          (!this.selectedDept || a.department === this.selectedDept) &&
-          (!this.search ||
-            a.teacher.toLowerCase().includes(this.search.toLowerCase()))
-        );
-      });
-    },
-  },
-};
+// state
+const assignments = ref([])
+const selectedPeriod = ref("")
+const selectedDept = ref("")
+const search = ref("")
+
+// เรียก REST API
+onMounted(async () => {
+  const res = await fetch("https://dummyjson.com/users?limit=12")
+  const data = await res.json()
+
+  assignments.value = data.users.map(u => ({
+    id: u.id,
+    teacher: `${u.firstName} ${u.lastName}`,
+    department: u.company?.department || "ไม่ระบุ",
+    period: u.id % 2 === 0 ? "รอบที่ 1/2568" : "รอบที่ 2/2568"
+  }))
+})
+
+// ภาควิชาไม่ซ้ำ
+const departments = computed(() => {
+  return [...new Set(assignments.value.map(a => a.department))]
+})
+
+// filter (ชื่อเดียวกับ template!)
+const filteredAssignments = computed(() => {
+  return assignments.value.filter(a => {
+    return (
+      (!selectedPeriod.value || a.period === selectedPeriod.value) &&
+      (!selectedDept.value || a.department === selectedDept.value) &&
+      (!search.value ||
+        a.teacher.toLowerCase().includes(search.value.toLowerCase()))
+    )
+  })
+})
 </script>
 
-<style scoped>
-@import url("https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap");
-</style>
+

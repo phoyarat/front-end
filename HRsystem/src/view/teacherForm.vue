@@ -66,31 +66,39 @@
 </template>
 
 <script>
-import assignments from "../resource/assignments.json";
-
 export default {
+  name: "teacherForm",
   props: ["id"],
-
   data() {
     return {
       assignment: null,
       form: {
-        responsibility: null,
-        teaching: null,
+        responsibility: "",
+        teaching: "",
         comment: "",
       },
     };
   },
-
-  created() {
-    this.assignment = assignments.find((a) => a.id === Number(this.id));
+  
+  async created() {
+    // ดึงข้อมูล DummyJSON ตาม id
+    const res = await fetch(`https://dummyjson.com/users/${this.id}`);
+    const user = await res.json();
+    
+    this.assignment = {
+      id: user.id,
+      teacher: `${user.firstName} ${user.lastName}`,
+      department: user.company?.department || "ไม่ระบุ",
+      period: "รอบที่ 1/2568",
+      email: user.email,
+    };
   },
-
+  
   methods: {
     submitForm() {
       const evaluation = {
-        id: Date.now(), // ไอดีความเห็น
-        assignmentId: this.assignment.id,
+        id: Date.now(),
+        userId: this.assignment.id,
         teacher: this.assignment.teacher,
         department: this.assignment.department,
         period: this.assignment.period,
@@ -98,15 +106,16 @@ export default {
         teaching: Number(this.form.teaching),
         comment: this.form.comment,
         totalScore:
-          Number(this.form.responsibility) + Number(this.form.teaching),
+          Number(this.form.responsibility) +
+          Number(this.form.teaching),
         date: new Date().toLocaleDateString("th-TH"),
       };
-
-      // บันทึกผลลง localStorage
-      let list = JSON.parse(localStorage.getItem("evaluations")) || [];
+      
+      // localStorage
+      const list = JSON.parse(localStorage.getItem("teacherForm")) || [];
       list.push(evaluation);
-      localStorage.setItem("evaluations", JSON.stringify(list));
-
+      localStorage.setItem("teacherForm", JSON.stringify(list));
+      
       alert("ส่งแบบประเมินเรียบร้อย!");
       this.$router.push("/teachers");
     },
