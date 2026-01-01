@@ -74,7 +74,7 @@
         <div class="hidden md:flex items-center">
           <!-- Sign In -->
           <a
-            href="#"
+            href="/login"
             class="mr-3 px-6 py-2 rounded-lg font-semibold text-white bg-gradient-to-r from-indigo-800 to-purple-800 hover:from-purple-700 hover:to-indigo-700 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
             style="text-shadow: 0 2px 5px rgba(0, 0, 0, 0.6)"
           >
@@ -82,7 +82,7 @@
           </a>
 
           <a
-            href="#"
+            href="/signup"
             class="px-6 py-2 rounded-lg font-semibold text-gray-900 bg-gradient-to-r from-amber-300 to-yellow-400 hover:from-yellow-400 hover:to-amber-300 shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300"
           >
             Sign Up
@@ -94,10 +94,14 @@
 </template>
 <script>
 import logo from "../assets/icon.jpg";
+
 export default {
-  name: "mybar",
+  name: "Mybar",
   data() {
-    return logo;
-  },
+    return {
+      logo
+    };
+  }
 };
 </script>
+
