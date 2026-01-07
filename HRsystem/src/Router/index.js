@@ -1,42 +1,81 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import Main from '../view/main.vue'
-import EvaluatorAssignments from '../components/evaluator/evaluatorAssignments.vue'
+// layouts
+import MainLayout from '../layouts/MainLayout.vue'
+
+// public pages
+import Login from '../pages/frontend/login.vue'
+import Signup from '../pages/frontend/signup.vue'
 import NotFound from '../view/notfound.vue'
+
+// protected pages (ของเดิม)
+import productdetail from '../pages/frontend/productdetail.vue'
+import Main from '../view/main.vue'
+import Dashboard from '../pages/backend/dashboard.vue'
 import Teachers from '../view/teachers.vue'
+import ProfilePage from '../view/profilepage.vue'
+import EvaluatorAssignments from '../components/evaluator/evaluatorAssignments.vue'
 import TeachersAssignments from '../components/teacher/TeachersAssignments.vue'
-import profilepage from '../view/profilepage.vue'
-import dashboard from '../view/dashboard.vue'
-import signup from '../view/signup.vue'
-import Login from "../view/login.vue";
 
 const routes = [
-  { path: '/', component: Main },
-  { path: '/evaluator', component: EvaluatorAssignments },
-  { path: '/evaluator/assignments/:id', name: 'EvalutionForm', component: () => import('../view/teacherForm.vue'), props: true },
-  { path: '/teachers', component: Teachers },
-  { path: '/form', component: TeachersAssignments },
-  { path: '/profilepage', component: profilepage },
-  { path: '/dashboard', component: dashboard, meta: { requiresAuth: true } },
-  { path: '/signup', component: signup },
-  { path: '/login', component: Login }, // 👈 ใช้ตัวเล็ก
-  { path: '/:catchAll(.*)', name: 'NotFound', component: NotFound },
-];
+  // 🔓 Public
+  // 🔐 Protected (มี Navbar)
+  {
+    path: '/',
+    component: MainLayout,
+    children: [
+      { path: '/login', component: Login },
+      { path: '/signup', component: Signup },
+      { path: '',name: 'Home',component: () => import('../view/main.vue')},
+      { path: 'dashboard',component: Dashboard,meta: {requiresAuth: true,role: 'admin'}},
+      { path: 'teachers', component: Teachers },
+      { path: 'profilepage', component: ProfilePage },
+      { path: 'evaluator', component: EvaluatorAssignments },
+      { path: 'form', component: TeachersAssignments },
+      {
+  path: 'products',
+  name: 'Products',
+  component: () => import('../pages/frontend/products.vue')
+},
+{
+  path: 'products/:id',
+  name: 'ProductDetail',
+  component: () => import('../pages/frontend/productdetail.vue')
+},
+
+      {
+        path: 'evaluator/assignments/:id',
+        name: 'EvalutionForm',
+        component: () => import('../view/teacherForm.vue'),
+        props: true
+      }
+    ]
+  },
+
+  { path: '/:catchAll(.*)', component: NotFound }
+]
 
 const router = createRouter({
   history: createWebHistory(),
   routes
-});
+})
 
-// 🔐 Auth Guard
+// 🔐 Auth Guard (แก้ key ให้ตรง)
 router.beforeEach((to, from, next) => {
-  const user = localStorage.getItem("user");
+  const user = JSON.parse(localStorage.getItem('user'))
 
-  if (to.meta.requiresAuth && !user) {
-    next("/login");
-  } else {
-    next();
+  const requiresAuth = to.matched.some(r => r.meta.requiresAuth)
+  const requiredRole = to.meta.role
+
+  if (requiresAuth && !user) {
+    return next('/login')
   }
-});
 
-export default router;
+  if (requiredRole && user.role !== requiredRole) {
+    return next('/') // ❌ ไม่ใช่ admin → กลับหน้าแรก
+  }
+
+  next()
+})
+
+export default router

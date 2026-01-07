@@ -109,7 +109,46 @@ app.post('/signup', upload.single('avatar'), async (req, res) => {
     }
     res.status(201).json({ message: 'Signup successful' });
   });
-});   
+});  
+// LOGIN user
+app.post('/login', (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Username and password required' });
+  }
+
+  const sql = 'SELECT * FROM users WHERE username = ?';
+
+  db.query(sql, [username], async (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: 'Database error' });
+    }
+
+    if (results.length === 0) {
+      return res.status(401).json({ error: 'Invalid username or password' });
+    }
+
+    const user = results[0];
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Invalid username or password' });
+    }
+
+    // ✅ login สำเร็จ
+    res.json({
+      token: 'mock-token', // (ถ้าจะใช้ JWT ค่อยเพิ่ม)
+      user: {
+        id: user.id,
+        username: user.username,
+        role: user.role,
+        avatar: user.avatar
+      }
+    });
+  });
+});
+
 app.put('/users/:id', (req, res) => {
   const { fname, lname, username } = req.body;
   const { id } = req.params;
